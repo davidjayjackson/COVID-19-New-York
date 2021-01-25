@@ -1,0 +1,39 @@
+---
+title: "New York Times COVID19 Data"
+author: "David Jackson"
+date: "1/25/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(scales)
+library(RSQLite)
+library(dplyr)
+library(forecast)
+```
+
+## COVID-19 Cases and Deaths for New York State and Select Counties
+* Counties: Kings County(2,589,974), Queens County(2,287,388),
+* New York County(1,631,993), Suffolk County (1,483,832),
+* Bronx County (1,435,068), Nassau County	(1,356,509)
+
+### Import County Population Data
+
+```{r}
+rm(list=ls())
+NYC <- read.csv("../DATA/NYCounties.csv")
+str(NYC)
+```
+
+### Import New State County Data
+
+```{r}
+db <- db <- dbConnect(RSQLite::SQLite(),dbname= "../COVID-19-DB/NYTimes.sqlite3")
+df <- dbGetQuery(db,"select date,state,county,new_cases,new_deaths from COUNTYDAILY")
+df <- subset(df,state=="New York"  )
+df$date <- as.Date(df$date)
+mean(df$new_cases)
+mean(df$new_deaths)
+```
