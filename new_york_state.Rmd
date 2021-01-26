@@ -1,7 +1,7 @@
 ---
 title: "New York Times COVID19 Data"
 author: "David Jackson"
-date: "1/25/2021"
+date: "1/25/2021 08:35 PM/EST"
 output: 
   html_document: 
     fig_width: 9
@@ -69,6 +69,7 @@ daily_total %>% ggplot() + geom_line(aes(x=date,y=Deaths,col=" Daily Deaths")) +
   scale_y_continuous(labels=comma)
   
 ```
+
 ### New YOrk Select Counties: Daily Cases and Daily Deaths
 
 ```{r}
