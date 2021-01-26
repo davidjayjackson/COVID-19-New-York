@@ -2,7 +2,10 @@
 title: "New York Times COVID19 Data"
 author: "David Jackson"
 date: "1/25/2021"
-output: html_document
+output: 
+  html_document: 
+    fig_width: 9
+    fig_height: 6
 ---
 
 ```{r setup, include=FALSE}
@@ -24,7 +27,7 @@ library(forecast)
 ```{r}
 rm(list=ls())
 NYC <- read.csv("../DATA/NYCounties.csv")
-str(NYC)
+summary(NYC$Population)
 ```
 
 ### Import New State County Data
@@ -34,6 +37,60 @@ db <- db <- dbConnect(RSQLite::SQLite(),dbname= "../COVID-19-DB/NYTimes.sqlite3"
 df <- dbGetQuery(db,"select date,state,county,new_cases,new_deaths from COUNTYDAILY")
 df <- subset(df,state=="New York"  )
 df$date <- as.Date(df$date)
-mean(df$new_cases)
-mean(df$new_deaths)
+summary(df$new_cases,na.rm=TRUE)
+summary(df$new_deaths,na.rm=TRUE)
+
 ```
+
+### Plot New York State: COVID-19 Daily Cases and Deaths
+
+```{r}
+daily_total <- df %>% group_by(date) %>% 
+        summarise(
+          Cases = sum(new_cases,na.rm=TRUE),
+          Deaths = sum(new_deaths,na.rm=TRUE)
+        )
+daily_total$CMA <- ma(daily_total$Cases,7,centre = TRUE)
+daily_total$DMA <- ma(daily_total$Deaths,7,centre = TRUE)
+```
+```{r}
+daily_total %>% ggplot() + geom_line(aes(x=date,y=Cases,col=" Daily Cases")) +
+  geom_line(aes(x=date,y=CMA,col="Moving Average")) +
+  labs(title="New York Daily COVID- 19 Cases",
+       subtitle = "(With 7 day moving average)") +
+  scale_y_continuous(labels=comma)
+  
+```
+```{r}
+daily_total %>% ggplot() + geom_line(aes(x=date,y=Deaths,col=" Daily Deaths")) +
+  geom_line(aes(x=date,y=DMA,col="Moving Average")) +
+  labs(title="New York Daily COVID- 19 Deaths",
+       subtitle = "(With 7 day moving average)") +
+  scale_y_continuous(labels=comma)
+  
+```
+### New YOrk Select Counties: Daily Cases and Daily Deaths
+
+```{r}
+county_detail<- subset(df,county == c("New York City","Suffolk","Nassau"))
+county_detail %>% ggplot() + geom_line(aes(x=date,y=new_cases,col=county)) +
+  scale_y_continuous(labels=comma) +
+  labs(title="Select Counties Daily Cases",y="Log10(Daily Cases)")
+
+
+county_detail %>% ggplot() + geom_line(aes(x=date,y=new_deaths,col=county)) +
+  scale_y_continuous(labels= comma) + 
+  labs(title="Select Counties Daily Deaths",y="Log10(Total Deaths)") 
+```
+```{r}
+county_detail %>% ggplot() + geom_area(aes(x=date,y=new_cases,fill=county)) +
+  scale_y_continuous(labels=comma) +
+  labs(title="Select Counties Daily Cases",y="Daily Cases") +
+  facet_wrap(~county,scales="free_y",ncol=2)
+
+county_detail %>% ggplot() + geom_area(aes(x=date,y=new_deaths,fill=county)) +
+  scale_y_continuous(labels=comma) +
+  labs(title="Select Counties Daily Deaths",y="Daily Deaths") +
+  facet_wrap(~county,scales="free_y",ncol=2)
+```
+
