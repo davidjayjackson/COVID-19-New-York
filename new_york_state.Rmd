@@ -18,9 +18,7 @@ library(forecast)
 ```
 
 ## COVID-19 Cases and Deaths for New York State and Select Counties
-* Counties: Kings County(2,589,974), Queens County(2,287,388),
-* New York County(1,631,993), Suffolk County (1,483,832),
-* Bronx County (1,435,068), Nassau County	(1,356,509)
+* Counties:  New York County(1,631,993), Suffolk County (1,483,832),Nassau County	(1,356,509)
 
 ### Import County Population Data
 
@@ -94,4 +92,39 @@ county_detail %>% ggplot() + geom_area(aes(x=date,y=new_deaths,fill=county)) +
   labs(title="Select Counties Daily Deaths",y="Daily Deaths") +
   facet_wrap(~county,scales="free_y",ncol=2)
 ```
+
+### Benford Law Analysis: BenfordTests Package
+
+```{r}
+library(BenfordTests)
+```
+```{r}
+set.seed(421)
+X <- rbenf(n=500)
+
+```
+
+### Plot First Digita Analysis
+
+```{r}
+signifd.analysis(X,digits = 1,ci_col = "lightgreen")
+```
+
+### Benford Analysis New York State Cases
+
+```{r}
+set.seed(1234)
+first_cases <- df$new_cases
+signifd.analysis(first_cases,digits = 1,ci_col = "lightgreen")
+```
+
+### Benford Analysis New York State Deaths
+
+```{r}
+set.seed(1234)
+first_deaths <- df$new_deaths
+signifd.analysis(first_deaths,digits = 1,ci_col = "lightgreen")
+
+```
+
 
