@@ -1,0 +1,129 @@
+---
+title: "Comparting New York With Other States"
+author: "David Jackson"
+date: "1/28/2021"
+output: 
+  html_document: 
+    fig_width: 8
+    fig_height: 6
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(scales)
+library(RSQLite)
+library(dplyr)
+library(forecast)
+```
+
+### Import New State County Data
+
+```{r}
+rm(list=ls())
+db <- db <- dbConnect(RSQLite::SQLite(),dbname= "../COVID-19-DB/NYTimes.sqlite3")
+df <- dbGetQuery(db,"select date,state,county,new_cases,new_deaths from COUNTYDAILY")
+df <- subset(df,state %in% c("New York","Texas","Florida","Illinois","Pennsylvania" ))
+df$date <- as.Date(df$date,format="%Y-%m-%d")
+summary(df$new_cases,na.rm=TRUE)
+summary(df$new_deaths,na.rm=TRUE)
+```
+
+```{r}
+state_totals <- df %>% group_by(state) %>% summarise(
+                Cases = sum(new_cases),
+                Deaths = sum(new_deaths)
+)
+daily_totals <- df %>% group_by(date) %>% summarise(
+                Cases = sum(new_cases),
+                Deaths = sum(new_deaths)
+)
+```
+
+### Plot of Daily Cases by State
+
+```{r}
+ggplot(df) + geom_line(aes(x=date,y=new_cases,col=state)) +
+  labs(title = "Daily Cases by State") +ylim(0,17000) 
+
+df %>% filter(new_cases >=0) %>%
+ ggplot() + geom_line(aes(x=date,y=new_cases,col=state)) +
+  labs(title = "Daily Deaths by State")  + facet_wrap(~state,ncol=2,scale="free_y") 
+   
+```
+
+### Plot of Daily Deaths by State
+
+```{r}
+ggplot(df) + geom_area(aes(x=date,y=new_deaths,col=state)) +
+  labs(title = "Daily Deaths by State") +scale_y_log10() + 
+  scale_y_continuous(labels=comma)
+
+df %>% filter(new_deaths >=0) %>%
+ ggplot() + geom_line(aes(x=date,y=new_deaths,col=state)) +
+  labs(title = "Daily Deaths by State")  + facet_wrap(~state,ncol=2,scale="free_y") 
+   
+```
+
+### Benford Law for Cases: Selected States
+
+```{r}
+library(BenfordTests)
+library(benford.analysis)
+```
+
+### Benford Analysis of Daily  Cases by State
+#### New York State
+
+```{r}
+set.seed(1234)
+nys_cases <- df %>% filter(state =="New York") %>% select(new_cases)
+nys_cases <- nys_cases$new_cases
+signifd.analysis(nys_cases,digits = 1,ci_col = "lightgreen")
+bfd <-benford(nys_cases)
+MAD(bfd)
+```
+
+#### Texas
+
+```{r}
+set.seed(1234)
+tx_cases <- df %>% filter(state =="Texas") %>% select(new_cases)
+tx_cases <- tx_cases$new_cases
+signifd.analysis(tx_cases,digits = 1,ci_col = "lightgreen")
+bfd <-benford(tx_cases)
+MAD(bfd)
+```
+
+#### Florida
+
+```{r}
+set.seed(1234)
+fl_cases <- df %>% filter(state =="Florida") %>% select(new_cases)
+fl_cases <- fl_cases$new_cases
+signifd.analysis(fl_cases,digits = 1,ci_col = "lightgreen")
+bfd <-benford(fl_cases)
+MAD(bfd)
+```
+
+#### Illinois
+
+```{r}
+set.seed(1234)
+il_cases <- df %>% filter(state =="Illinois") %>% select(new_cases)
+il_cases <- il_cases$new_cases
+signifd.analysis(il_cases,digits = 1,ci_col = "lightgreen")
+bfd <-benford(fl_cases)
+MAD(bfd)
+```
+
+#### Pennsylvania
+
+```{r}
+set.seed(1234)
+penn_cases <- df %>% filter(state =="Pennsylvania") %>% select(new_cases)
+penn_cases <- penn_cases$new_cases
+signifd.analysis(penn_cases,digits = 1,ci_col = "lightgreen")
+bfd <-benford(penn_cases)
+MAD(bfd)
+```
