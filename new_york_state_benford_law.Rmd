@@ -117,7 +117,7 @@ signifd.analysis(X,digits = 1,ci_col = "lightgreen")
 set.seed(1234)
 first_cases <- df$new_cases
 signifd.analysis(first_cases,digits = 1,ci_col = "lightgreen")
-bfc <-benford(first_cases)
+bfd <-benford(first_cases)
 MAD(bfd)
 ```
 
@@ -128,6 +128,8 @@ set.seed(1234)
 first_deaths <- df$new_deaths
 signifd.analysis(first_deaths,digits = 1,ci_col = "lightgreen")
 bfd <-benford(first_deaths)
+```
+```{r}
 MAD(bfd)
 
 ```
