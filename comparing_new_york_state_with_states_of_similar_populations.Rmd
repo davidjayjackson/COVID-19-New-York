@@ -9,12 +9,14 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE,warning = FALSE,message = FALSE)
 library(ggplot2)
 library(scales)
 library(RSQLite)
 library(dplyr)
 library(forecast)
+library(BenfordTests)
+library(benford.analysis)
 ```
 
 ### Import New State County Data
@@ -23,7 +25,7 @@ library(forecast)
 rm(list=ls())
 db <- db <- dbConnect(RSQLite::SQLite(),dbname= "../COVID-19-DB/NYTimes.sqlite3")
 df <- dbGetQuery(db,"select date,state,county,new_cases,new_deaths from COUNTYDAILY")
-df <- subset(df,state %in% c("New York","Texas","Florida","Illinois","Pennsylvania" ))
+df <- subset(df,state %in% c("New York","Texas","Florida","Illinois","Pennsylvania","Ohio" ))
 df$date <- as.Date(df$date,format="%Y-%m-%d")
 summary(df$new_cases,na.rm=TRUE)
 summary(df$new_deaths,na.rm=TRUE)
@@ -68,8 +70,7 @@ df %>% filter(new_deaths >=0) %>%
 ### Benford Law for Cases: Selected States
 
 ```{r}
-library(BenfordTests)
-library(benford.analysis)
+
 ```
 
 ### Benford Analysis of Daily  Cases by State
@@ -128,6 +129,17 @@ bfd <-benford(penn_cases)
 MAD(bfd)
 ```
 
+#### Ohio
+
+```{r}
+set.seed(1234)
+penn_cases <- df %>% filter(state =="Ohio") %>% select(new_cases)
+penn_cases <- penn_cases$new_cases
+signifd.analysis(penn_cases,digits = 1,ci_col = "lightgreen")
+bfd <-benford(penn_cases)
+MAD(bfd)
+```
+
 ### Benford Law for Deaths: Selected States
 
 #### New York State
@@ -179,6 +191,17 @@ MAD(bfd)
 ```{r}
 set.seed(1234)
 penn_cases <- df %>% filter(state =="Pennsylvania") %>% select(new_deaths)
+penn_cases <- penn_cases$new_deaths
+signifd.analysis(penn_cases,digits = 1,ci_col = "lightgreen")
+bfd <-benford(penn_cases)
+MAD(bfd)
+```
+
+#### Pennsylvania
+
+```{r}
+set.seed(1234)
+penn_cases <- df %>% filter(state =="Ohio") %>% select(new_deaths)
 penn_cases <- penn_cases$new_deaths
 signifd.analysis(penn_cases,digits = 1,ci_col = "lightgreen")
 bfd <-benford(penn_cases)
