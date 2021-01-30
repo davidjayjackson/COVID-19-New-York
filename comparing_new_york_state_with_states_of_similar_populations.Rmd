@@ -1,7 +1,7 @@
 ---
 title: "Comparting New York With Other States"
 author: "David Jackson"
-date: "1/28/2021"
+date: "01/29/2021 9:30 PM/EST"
 output: 
   html_document: 
     fig_width: 8
@@ -25,7 +25,7 @@ library(benford.analysis)
 rm(list=ls())
 db <- db <- dbConnect(RSQLite::SQLite(),dbname= "../COVID-19-DB/NYTimes.sqlite3")
 df <- dbGetQuery(db,"select date,state,county,new_cases,new_deaths from COUNTYDAILY")
-df <- subset(df,state %in% c("New York","Texas","Florida","Illinois","Pennsylvania","Ohio" ))
+df <- subset(df,state %in% c("New York","Texas","Florida","Illinois","Pennsylvania","Ohio","California","Georgia" ))
 df$date <- as.Date(df$date,format="%Y-%m-%d")
 summary(df$new_cases,na.rm=TRUE)
 summary(df$new_deaths,na.rm=TRUE)
@@ -67,11 +67,8 @@ df %>% filter(new_deaths >=0) %>%
    
 ```
 
-### Benford Law for Cases: Selected States
+## Benford Law for Cases: Selected States
 
-```{r}
-
-```
 
 ### Benford Analysis of Daily  Cases by State
 #### New York State
@@ -140,6 +137,28 @@ bfd <-benford(penn_cases)
 MAD(bfd)
 ```
 
+#### California
+
+```{r}
+set.seed(1234)
+ca_cases <- df %>% filter(state =="California") %>% select(new_cases)
+ca_cases <- ca_cases$new_cases
+signifd.analysis(ca_cases,digits = 1,ci_col = "lightgreen")
+bfd <-benford(ca_cases)
+MAD(bfd)
+```
+
+#### Georgia
+
+```{r}
+set.seed(1234)
+ga_cases <- df %>% filter(state =="Georgia") %>% select(new_cases)
+ga_cases <- ga_cases$new_cases
+signifd.analysis(ga_cases,digits = 1,ci_col = "lightgreen")
+bfd <-benford(ga_cases)
+MAD(bfd)
+```
+
 ### Benford Law for Deaths: Selected States
 
 #### New York State
@@ -197,7 +216,7 @@ bfd <-benford(penn_cases)
 MAD(bfd)
 ```
 
-#### Pennsylvania
+#### Ohio
 
 ```{r}
 set.seed(1234)
@@ -205,5 +224,27 @@ penn_cases <- df %>% filter(state =="Ohio") %>% select(new_deaths)
 penn_cases <- penn_cases$new_deaths
 signifd.analysis(penn_cases,digits = 1,ci_col = "lightgreen")
 bfd <-benford(penn_cases)
+MAD(bfd)
+```
+
+#### California
+
+```{r}
+set.seed(1234)
+penn_cases <- df %>% filter(state =="California") %>% select(new_deaths)
+penn_cases <- penn_cases$new_deaths
+signifd.analysis(penn_cases,digits = 1,ci_col = "lightgreen")
+bfd <-benford(penn_cases)
+MAD(bfd)
+```
+
+#### Georgia
+
+```{r}
+set.seed(1234)
+ga_cases <- df %>% filter(state =="Georgia") %>% select(new_deaths)
+ga_cases <- ga_cases$new_deaths
+signifd.analysis(ga_cases,digits = 1,ci_col = "lightgreen")
+bfd <-benford(ga_cases)
 MAD(bfd)
 ```
