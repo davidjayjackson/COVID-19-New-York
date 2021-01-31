@@ -1,0 +1,45 @@
+---
+title: "COVID-19: First and Second Digits Analysis"
+author: "David Jackson"
+date: "01/31/2021 3:00 PM/EST"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,warning = FALSE,message = FALSE)
+library(ggplot2)
+library(scales)
+library(RSQLite)
+library(dplyr)
+library(forecast)
+library(BenfordTests)
+library(benford.analysis)
+library(plotly)
+```
+
+## Benford's Law Analysis for New Yoirk and Selected US States (Cases and Deaths)
+### Is New York State "Cooking their Books" for Covid19 Deaths?
+#### Comparing New  York State to:
+* Texas,Florida,Illinois,Pennsylvania,Ohio,California,Georgia
+  
+
+#### New York Times (Jan. 28, 2020)
+
+* N.Y. Severely Undercounted Virus Deaths in Nursing Homes
+"The state attorney general, Letitia James, said it’s likely that the Cuomo administration failed to report thousands of Covid-19 deaths of nursing home residents."
+* Source: https://www.nytimes.com/2021/01/28/nyregion/nursing-home-deaths-cuomo.html
+
+#### New York Times COVID-19 Github Repository
+
+* NEW-YORK-DEATHS-METHODOLOGY.md
+"Starting with data for Aug. 6, we are switching to reporting deaths in New York State by county of residence instead of the county in which the death took place."
+* Sourcs: https://github.com/nytimes/covid-19-data/blob/master/NEW-YORK-DEATHS-METHODOLOGY.md
+* Data Source: https://github.com/nytimes/covid-19-data
+
+### Introduction:
+* If based on the two quotes from the New York Times that New York State is intentionally understating the deaths in Nursing Homes.
+* Analysis will be done using Benford's Law first (1st) digit distribution.
+* The conclusion,  Any state  that's first digit analysis (Covid-19 Deaths) is simalar to New York State deaths is probably also "fiddling" with their deaths counts.
+
+
+### Data Visulations for Covid19 Daily Cases and Deaths
