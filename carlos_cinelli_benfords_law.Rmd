@@ -2,7 +2,10 @@
 title: "COVID-19: First and Second Digits Analysis"
 author: "David Jackson"
 date: "01/31/2021 3:00 PM/EST"
-output: html_document
+output: 
+  html_document: 
+    fig_width: 9
+    fig_height: 7
 ---
 
 ```{r setup, include=FALSE}
@@ -42,4 +45,172 @@ library(plotly)
 * The conclusion,  Any state  that's first digit analysis (Covid-19 Deaths) is simalar to New York State deaths is probably also "fiddling" with their deaths counts.
 
 
-### Data Visulations for Covid19 Daily Cases and Deaths
+### Data Visualization for Covid-19 Daily Cases and Deaths
+
+
+```{r}
+rm(list=ls())
+db <- db <- dbConnect(RSQLite::SQLite(),dbname= "../COVID-19-DB/NYTimes.sqlite3")
+df <- dbGetQuery(db,"select date,state,county,new_cases,new_deaths from COUNTYDAILY")
+df <- subset(df,state %in% c("New York","Texas","Florida","Illinois",
+                            "Pennsylvania","Ohio","California",
+                             "Georgia" ))
+df$date <- as.Date(df$date,format="%Y-%m-%d")
+```
+#### Plot of Daily Cases by State
+
+```{r}
+ggplot(df) + geom_line(aes(x=date,y=new_cases,col=state)) +
+  labs(title = "Daily Cases by State") +ylim(0,17000) 
+
+df %>% filter(new_cases >=0) %>%
+ ggplot() + geom_line(aes(x=date,y=new_cases,col=state)) +
+  labs(title = "Daily Deaths by State")  + facet_wrap(~state,ncol=2,scale="free_y") 
+   
+```
+
+#### Plot of Daily Deaths by State
+
+```{r}
+ggplot(df) + geom_area(aes(x=date,y=new_deaths,col=state)) +
+  labs(title = "Daily Deaths by State") +scale_y_log10() + 
+  scale_y_continuous(labels=comma) + ylim(0, 2500)
+
+df %>% filter(new_deaths >=0) %>%
+ ggplot() + geom_line(aes(x=date,y=new_deaths,col=state)) +
+  labs(title = "Daily Deaths by State")  + facet_wrap(~state,ncol=2,scale="free_y") 
+   
+```
+
+### Benford Analysis of Daily  Cases by State
+### New York State
+
+```{r}
+
+set.seed(1234)
+nys_cases <- df %>% filter(state =="New York") %>% select(new_cases)
+nys_cases <- nys_cases$new_cases
+signifd.analysis(nys_cases,digits = 1,ci_col = "lightgreen")
+bfd <-benford(nys_cases)
+```
+
+####  Mean Absolute Deviation (MAD)
+
+```{r}
+MAD(bfd)
+```
+
+### California
+
+
+```{r}
+set.seed(1234)
+tx_cases <- df %>% filter(state =="California") %>% select(new_cases)
+tx_cases <- tx_cases$new_cases
+signifd.analysis(tx_cases,digits = 1,ci_col = "lightgreen")
+bfd <-benford(tx_cases)
+```
+
+*  Mean Absolute Deviation (MAD)
+
+```{r}
+MAD(bfd)
+```
+
+
+### Texas
+
+```{r}
+set.seed(1234)
+tx_cases <- df %>% filter(state =="Texas") %>% select(new_cases)
+tx_cases <- tx_cases$new_cases
+signifd.analysis(tx_cases,digits = 1,ci_col = "lightgreen")
+bfd <-benford(tx_cases)
+
+```
+*  Mean Absolute Deviation (MAD)
+
+```{r}
+MAD(bfd)
+```
+
+### Florida
+
+```{r}
+set.seed(1234)
+fl_cases <- df %>% filter(state =="Florida") %>% select(new_cases)
+fl_cases <- fl_cases$new_cases
+signifd.analysis(fl_cases,digits = 1,ci_col = "lightgreen")
+bfd <-benford(fl_cases)
+MAD(bfd)
+```
+
+*  Mean Absolute Deviation (MAD)
+
+```{r}
+MAD(bfd)
+```
+
+### Illinois
+
+```{r}
+set.seed(1234)
+il_cases <- df %>% filter(state =="Illinois") %>% select(new_cases)
+il_cases <- il_cases$new_cases
+signifd.analysis(il_cases,digits = 1,ci_col = "lightgreen")
+bfd <-benford(fl_cases)
+```
+
+*  Mean Absolute Deviation (MAD)
+
+```{r}
+MAD(bfd)
+```
+
+### Pennsylvania
+
+```{r}
+set.seed(1234)
+penn_cases <- df %>% filter(state =="Pennsylvania") %>% select(new_cases)
+penn_cases <- penn_cases$new_cases
+signifd.analysis(penn_cases,digits = 1,ci_col = "lightgreen")
+bfd <-benford(penn_cases)
+```
+
+*  Mean Absolute Deviation (MAD)
+
+```{r}
+MAD(bfd)
+```
+
+### Ohio
+
+```{r}
+set.seed(1234)
+penn_cases <- df %>% filter(state =="Ohio") %>% select(new_cases)
+penn_cases <- penn_cases$new_cases
+signifd.analysis(penn_cases,digits = 1,ci_col = "lightgreen")
+bfd <-benford(penn_cases)
+```
+
+*  Mean Absolute Deviation (MAD)
+
+```{r}
+MAD(bfd)
+```
+
+### California
+
+```{r}
+set.seed(1234)
+ca_cases <- df %>% filter(state =="California") %>% select(new_cases)
+ca_cases <- ca_cases$new_cases
+signifd.analysis(ca_cases,digits = 1,ci_col = "lightgreen")
+bfd <-benford(ca_cases)
+```
+
+*  Mean Absolute Deviation (MAD)
+
+```{r}
+MAD(bfd)
+```
