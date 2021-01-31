@@ -1,7 +1,7 @@
 ---
 title: "COVID-19: First and Second Digits Analysis"
 author: "David Jackson"
-date: "01/31/2021 3:00 PM/EST"
+date: "01/31/2021 04:40 PM/EST"
 output: 
   html_document: 
     fig_width: 9
@@ -23,19 +23,19 @@ library(plotly)
 ## Benford's Law Analysis for New Yoirk and Selected US States (Cases and Deaths)
 ### Is New York State "Cooking their Books" for Covid19 Deaths?
 #### Comparing New  York State to:
-* Texas,Florida,Illinois,Pennsylvania,Ohio,California,Georgia
+* New York, Texas,Florida,Illinois,Pennsylvania,Ohio,California,Georgia
   
 
 ## New York Times (Jan. 28, 2020)
 
-* N.Y. Severely Undercounted Virus Deaths in Nursing Homes
-"The state attorney general, Letitia James, said it’s likely that the Cuomo administration failed to report thousands of Covid-19 deaths of nursing home residents."
+* *N.Y. Severely Undercounted Virus Deaths in Nursing Homes*
+* "The state attorney general, Letitia James, said it’s likely that the Cuomo administration failed to report thousands of Covid-19 deaths of nursing home residents."
 * Source: https://www.nytimes.com/2021/01/28/nyregion/nursing-home-deaths-cuomo.html
 
 ## New York Times COVID-19 Github Repository
 
-* NEW-YORK-DEATHS-METHODOLOGY.md
-"Starting with data for Aug. 6, we are switching to reporting deaths in New York State by county of residence instead of the county in which the death took place."
+* *NEW-YORK-DEATHS-METHODOLOGY.md*
+* "Starting with data for Aug. 6, we are switching to reporting deaths in New York State by county of residence instead of the county in which the death took place."
 * Sourcs: https://github.com/nytimes/covid-19-data/blob/master/NEW-YORK-DEATHS-METHODOLOGY.md
 * Data Source: https://github.com/nytimes/covid-19-data
 
@@ -85,6 +85,8 @@ df %>% filter(new_deaths >=0) %>%
 ```
 
 ## Benford Analysis of Daily  Cases by State
+* Note: In general (daily) Cases match expected values better than (daily) Deaths
+
 ## New York State
 
 ```{r}
@@ -232,32 +234,6 @@ bfd <-benford(ca_cases)
 MAD(bfd)
 ```
 
-
-## Plot of Daily Cases by State
-
-```{r}
-ggplot(df) + geom_line(aes(x=date,y=new_cases,col=state)) +
-  labs(title = "Daily Cases by State") +ylim(0,17000) 
-
-df %>% filter(new_cases >=0) %>%
- ggplot() + geom_line(aes(x=date,y=new_cases,col=state)) +
-  labs(title = "Daily Deaths by State")  + facet_wrap(~state,ncol=2,scale="free_y") 
-   
-```
-
-## Plot of Daily Deaths by State
-
-```{r}
-ggplot(df) + geom_area(aes(x=date,y=new_deaths,col=state)) +
-  labs(title = "Daily Deaths by State") +scale_y_log10() + 
-  scale_y_continuous(labels=comma) + ylim(0, 2500)
-
-df %>% filter(new_deaths >=0) %>%
- ggplot() + geom_line(aes(x=date,y=new_deaths,col=state)) +
-  labs(title = "Daily Deaths by State")  + facet_wrap(~state,ncol=2,scale="free_y") 
-   
-```
-
 ## Benford Analysis of Daily  Deaths by State
 ## New York State
 
@@ -363,7 +339,7 @@ MAD(bfd)
 ```{r}
 set.seed(1234)
 penn_cases <- df %>% filter(state =="Ohio") %>% select(new_deaths)
-penn_cases <- penn_cases$new_cases
+penn_cases <- penn_cases$new_deaths
 signifd.analysis(penn_cases,digits = 1,ci_col = "lightgreen")
 bfd <-benford(penn_cases)
 ```
@@ -379,7 +355,7 @@ MAD(bfd)
 ```{r}
 set.seed(1234)
 ca_cases <- df %>% filter(state =="California") %>% select(new_deaths)
-ca_cases <- ca_cases$new_cases
+ca_cases <- ca_cases$new_deaths
 signifd.analysis(ca_cases,digits = 1,ci_col = "lightgreen")
 bfd <-benford(ca_cases)
 ```
@@ -395,7 +371,7 @@ MAD(bfd)
 ```{r}
 set.seed(1234)
 ca_cases <- df %>% filter(state =="Georgia") %>% select(new_deaths)
-ca_cases <- ca_cases$new_cases
+ca_cases <- ca_cases$new_deaths
 signifd.analysis(ca_cases,digits = 1,ci_col = "lightgreen")
 bfd <-benford(ca_cases)
 ```
