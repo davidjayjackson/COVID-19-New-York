@@ -1,7 +1,7 @@
 ---
 title: "New York's COVID-19"
 author: "David Jackson"
-date: "Nov. 26, 2020"
+date: "Feb. 11, 2021 01:50 PM/EST"
 output: 
   html_document: 
     fig_width: 9
